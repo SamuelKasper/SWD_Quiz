@@ -1,1 +1,1 @@
-[]
+[{"title":"titel","Question":[{"questionText":"12?","correctAnswer":12,"type":"number"},{"questionText":"13?","correctAnswer":13,"type":"number"},{"questionText":"ja","correctAnswer":"ja!","type":"text"},{"questionText":"1,2,3,4","answers":["1","2","3","4"],"correctAnswer":"1","type":"text"}],"public":false}]

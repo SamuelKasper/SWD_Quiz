@@ -87,6 +87,7 @@ namespace Project {
         case "CreateQuiz":
           //create quiz code
           await User.user.createQuiz();
+          this.showOptionsLogin();
           break;
 
         default:
