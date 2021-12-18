@@ -9,7 +9,6 @@ import { quizDao } from '../dao/quizDao';
 
 export class Quiz {
     constructor() { }
-
     public iQuiz: quizDao = { title: "", question: [], isPublic: false }
 
     public async newQuiz(): Promise<void> {
@@ -35,7 +34,7 @@ export class Quiz {
     }
 
     // Options to show in Terminal
-    public async showQuestionTypes(): Promise<void> {
+    private async showQuestionTypes(): Promise<void> {
         let answer: Answers<string> = await newConsole.showOptions(
             [
                 "Number Question",
@@ -48,7 +47,7 @@ export class Quiz {
     }
 
     // Answers which appears after choosing an option
-    public async handleAnswerLogin(_answer: number): Promise<void> {
+    private async handleAnswerLogin(_answer: number): Promise<void> {
         switch (_answer) {
             case 1:
                 //await this.handleUser("Number");
@@ -78,11 +77,12 @@ export class Quiz {
                 newConsole.printLine("Option not available!");
         }
     }
-   
+
     // Options to show in Terminal
-    public async showQuizzes(): Promise<void> {
+    public async showQuizzes(): Promise<number[]> {
         let allQuizzes: quizDao[] = await FileHandler.readJsonFile("./files/Quiz.json");
         let quizNames: string[] = [];
+        let result: number[] = [];
         //save data from json in array
         for (let i: number = 0; i < allQuizzes.length; i++) {
             quizNames.push(allQuizzes[i].title);
@@ -91,24 +91,30 @@ export class Quiz {
         //show the quiz names
         if (quizNames.length > 0) {
             if (quizNames.length == 1) {
-                await this.playQuiz(allQuizzes[0]);
+                result =  await this.playQuiz(allQuizzes[0]);
             } else {
                 let answer: Answers<string> = await newConsole.showOptions(
                     quizNames,
                     "Choose a Quiz you want to play?"
                 );
-                await this.playQuiz(allQuizzes[answer.value]);
+                result = await this.playQuiz(allQuizzes[answer.value]);
             }
         }
+        return result;
     }
 
-    public async playQuiz(_quiz: quizDao) {
-        let allQuizzes: quizDao[] = await FileHandler.readJsonFile("./files/Quiz.json");
-        newConsole.printLine("Quiz Running");
-        for (let i: number = 0; i < allQuizzes.length; i++) {
-            newConsole.printLine(allQuizzes[i].title);
+    private async playQuiz(_quiz: quizDao) {
+        //pos 0: answered questions, pos 1: correct questions
+        let result: number[] = [0,0];
+        for (let i: number = 0; i < _quiz.question.length; i++) {
+            let answer: boolean = await Question.askQuestion(_quiz.question[i]);
+            if(answer){
+                result[0]++;
+                result[1]++;
+            }else{
+                result[0]++;
+            }
         }
-
+        return result;
     }
-
 }

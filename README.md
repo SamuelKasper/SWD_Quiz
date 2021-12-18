@@ -1,4 +1,4 @@
-# SoftwareDesignGruppe5
+# SoftwareDesign - Samuel Kasper
 ## Requirements
 
 - Node.js

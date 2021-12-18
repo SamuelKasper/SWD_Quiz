@@ -30,6 +30,11 @@ export class FileHandler {
     writeFileSync(_pathToFile, JSON.stringify(file));
   }
 
+  //overwrite file
+  public overwriteJsonFile(_pathToFile : string, _dataToFile: any) : void {
+    writeFileSync(_pathToFile, JSON.stringify(_dataToFile));
+  }
+
 }
 
 export default FileHandler.getInstance();

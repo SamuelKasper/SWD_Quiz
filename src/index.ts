@@ -1,11 +1,16 @@
 import newConsole from './classes/singletons/NewConsole';
 import { Answers } from 'prompts';
 import { User } from './classes/User';
+import { stat } from 'fs';
+import { Statistic } from './classes/Statistic';
+import { statisticDao } from './dao/statisticDao';
 
 namespace Project {
   export class Main {
     constructor() { }
+    private playedQuizzes: number = 0;
     private loggedIn: boolean = false;
+    private loggedInName: string = "";
     //------------------------------ Things to show in Terminal
     // Options to show in Terminal
     public async showOptionsLogin(): Promise<void> {
@@ -15,6 +20,7 @@ namespace Project {
           "Login",
           "Play",
           "Create Quiz",
+          "Statistic",
         ],
         "Which option do you want to choose?"
       );
@@ -46,6 +52,15 @@ namespace Project {
           }
           break;
 
+         case 5:
+          if (this.loggedIn) {
+            await this.handleUser("Statistic");
+          } else {
+            newConsole.printLine("You have to log in to create a quiz!\n");
+            this.showOptionsLogin();
+          }
+          break;
+
         default:
           newConsole.printLine("Option not available!");
       }
@@ -71,6 +86,7 @@ namespace Project {
           success = await User.user.login(userName.value, password.value)
           if (success) {
             this.loggedIn = true;
+            this.loggedInName = userName.value;
             newConsole.printLine("Success: " + success + "\n");
             this.showOptionsLogin();
           } else {
@@ -81,7 +97,15 @@ namespace Project {
 
         case "Play":
           //play code
-          await User.user.showQuizzes();
+          let stats: number[] = await User.user.showQuizzes();
+          this.playedQuizzes++;
+          if(this.loggedIn){
+            let statistic: statisticDao = new statisticDao(this.playedQuizzes, stats[1], stats[0], this.loggedInName);
+            Statistic.saveStatistic(statistic);
+            Statistic.getStatistic(this.loggedInName);
+          }else{
+            newConsole.printLine("Log in to save statistics!");
+          }
           await this.showOptionsLogin();
           break;
 
@@ -94,6 +118,12 @@ namespace Project {
             newConsole.printLine("Success: " + success + "\n Error");
           this.showOptionsLogin();
           break;
+        
+        case "Statistic":
+          //show stats
+          Statistic.getStatistic(this.loggedInName);
+          this.showOptionsLogin();
+          break;
 
         default:
           newConsole.printLine("Error");
@@ -103,14 +133,6 @@ namespace Project {
     /*------------------------------Main function*/
     public async start(): Promise<void> {
       this.showOptionsLogin();
-      /*
-      let ques: NumberQuestion = new NumberQuestion()
-      await ques.setQuestion();
-      await ques.setAnswers();
-
-      let quesChoice: ChoiceQuestion = new ChoiceQuestion()
-      await quesChoice.setQuestion();
-      await quesChoice.setAnswers();*/
     }
   }
   let main: Main = new Main();

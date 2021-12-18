@@ -35,7 +35,8 @@ export class User {
     //show quizzes
     public async showQuizzes(){
         let quiz: Quiz = new Quiz();
-        await quiz.showQuizzes();
+        let stats: number[] = await quiz.showQuizzes();
+        return stats;
     }
 }
 
