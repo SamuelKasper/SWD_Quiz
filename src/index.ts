@@ -81,12 +81,17 @@ namespace Project {
 
         case "Play":
           //play code
-          newConsole.printLine("Playing");
+          await User.user.showQuizzes();
+          await this.showOptionsLogin();
           break;
 
         case "CreateQuiz":
           //create quiz code
-          await User.user.createQuiz();
+          success = await User.user.createQuiz();
+          if(success)
+            newConsole.printLine("Success: " + success + "Quiz was successfully created\n");
+          else
+            newConsole.printLine("Success: " + success + "\n Error");
           this.showOptionsLogin();
           break;
 

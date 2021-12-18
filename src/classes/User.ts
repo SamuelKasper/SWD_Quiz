@@ -1,35 +1,22 @@
 import FileHandler from '../classes/singletons/FileHandler';
-import newConsole from '../classes/singletons/NewConsole';
-import { NumberQuestion } from '../classes/NumberQuestion';
-import { ChoiceQuestion } from '../classes/ChoiceQuestion';
-import { Question } from './Question';
-import { Answers } from 'prompts';
-import { TextQuestion } from './TextQuestion';
 import { Quiz } from './Quiz';
-
-interface IUser {
-    username: string;
-    passwort: string;
-}
-
-
-
+import { userDao } from '../dao/userDao';
 
 export class User {
     public static user: User = new User();
 
     //register
     public register(_userName: string, _passwort: string): boolean {
-        let userObject: IUser = { username: _userName, passwort: _passwort };
+        let userObject: userDao = { username: _userName, password: _passwort };
         FileHandler.writeJsonFile("./files/User.json", userObject)
         return true;
     }
 
     //login
     public async login(_userName: string, _passwort: string): Promise<boolean> {
-        let allUser: IUser[] = await FileHandler.readJsonFile("./files/User.json");
+        let allUser: userDao[] = await FileHandler.readJsonFile("./files/User.json");
         for (let i: number = 0; i < allUser.length; i++) {
-            if (allUser[i].username == _userName && allUser[i].passwort == _passwort) {
+            if (allUser[i].username == _userName && allUser[i].password == _passwort) {
                 return true
             }
         }
@@ -39,9 +26,16 @@ export class User {
     //statistic
 
     //create quiz
-    public async createQuiz() {
+    public async createQuiz(): Promise<boolean> {
         let quiz: Quiz = new Quiz();
-        quiz.newQuiz();
+        await quiz.newQuiz();
+        return true;
+    }
+
+    //show quizzes
+    public async showQuizzes(){
+        let quiz: Quiz = new Quiz();
+        await quiz.showQuizzes();
     }
 }
 
