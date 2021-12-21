@@ -1,15 +1,23 @@
 import FileHandler from '../classes/singletons/FileHandler';
 import { Quiz } from './Quiz';
 import { userDao } from '../dao/userDao';
+import NewConsole from './singletons/NewConsole';
 
 export class User {
     public static user: User = new User();
 
     //register
     public register(_userName: string, _passwort: string): boolean {
-        let userObject: userDao = { username: _userName, password: _passwort };
-        FileHandler.writeJsonFile("./files/User.json", userObject)
-        return true;
+        let regexName: RegExp = /^[a-z]{1,10}$/;
+        let nameIsValid: boolean = regexName.test(_userName);
+        if (nameIsValid) {
+            let userObject: userDao = { username: _userName, password: _passwort };
+            FileHandler.writeJsonFile("./files/User.json", userObject)
+            return true;
+        }else{
+            NewConsole.printLine("username invalid. Only 10 characters allowed");
+            return false;
+        }
     }
 
     //login
