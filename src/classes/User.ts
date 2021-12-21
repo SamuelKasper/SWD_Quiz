@@ -23,7 +23,16 @@ export class User {
         return false;
     }
 
-    //statistic
+    //check username
+    public async checkUsernameFree(_name: string): Promise<boolean> {
+        let allUser: userDao[] = await FileHandler.readJsonFile("./files/User.json");
+        for (let i: number = 0; i < allUser.length; i++) {
+            if (allUser[i].username == _name) {
+                return false
+            }
+        }
+        return true;
+    }
 
     //create quiz
     public async createQuiz(): Promise<boolean> {
@@ -33,7 +42,7 @@ export class User {
     }
 
     //show quizzes
-    public async showQuizzes(){
+    public async showQuizzes() {
         let quiz: Quiz = new Quiz();
         let stats: number[] = await quiz.showQuizzes();
         return stats;

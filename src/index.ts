@@ -52,7 +52,7 @@ namespace Project {
           }
           break;
 
-         case 5:
+        case 5:
           if (this.loggedIn) {
             await this.handleUser("Statistic");
           } else {
@@ -75,8 +75,14 @@ namespace Project {
           //register code
           userName = await newConsole.askForAnAnswers("gib dein UserNamen ein", 'text');
           password = await newConsole.askForAnAnswers("gib dein Passwort ein", 'password');
-          success = User.user.register(userName.value, password.value)
-          newConsole.printLine("Success: " + success + "\n");
+          let nameValid: boolean = await User.user.checkUsernameFree(userName.value);
+          if (nameValid) {
+            success = User.user.register(userName.value, password.value)
+            newConsole.printLine("Success: " + success + "\n");
+            break;
+          }else{
+            newConsole.printLine("Success: " + success + "Name already used.\n");
+          }
           break;
 
         case "Login":
@@ -99,11 +105,11 @@ namespace Project {
           //play code
           let stats: number[] = await User.user.showQuizzes();
           this.playedQuizzes++;
-          if(this.loggedIn){
+          if (this.loggedIn) {
             let statistic: statisticDao = new statisticDao(this.playedQuizzes, stats[1], stats[0], this.loggedInName);
             Statistic.saveStatistic(statistic);
             Statistic.getStatistic(this.loggedInName);
-          }else{
+          } else {
             newConsole.printLine("Log in to save statistics!");
           }
           await this.showOptionsLogin();
@@ -112,13 +118,13 @@ namespace Project {
         case "CreateQuiz":
           //create quiz code
           success = await User.user.createQuiz();
-          if(success)
+          if (success)
             newConsole.printLine("Success: " + success + "Quiz was successfully created\n");
           else
             newConsole.printLine("Success: " + success + "\n Error");
           this.showOptionsLogin();
           break;
-        
+
         case "Statistic":
           //show stats
           Statistic.getStatistic(this.loggedInName);
